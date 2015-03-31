@@ -14,13 +14,14 @@ containerhost = "hostname"
 corevol = "/cores"
 
 # INPUT REQUESTS 
-# FIXME: Change these inputs to command line flags
-osversion = input('Enter the RHEL version the core file was created on (5, 6 or 7): ')
+# FIXME: Change these inputs to command line flags and add a --help dialog
+osversion = int(input('Enter the RHEL version the core file was created on (5, 6 or 7): '))
 if not between(osversion, min=5, max=7):
 	print "The RHEL version entered is invalid."
 	sys.exit(1)
 else:
 	pass
+	osversion = str(osversion)
 
 pkgversion = raw_input('Enter the full package name-version.arch (ex. autofs-5.0.5-109.el6_6.1.x86_64): ')
 corelocation = raw_input('Enter the full path to the core file you need analyzed: ')
@@ -28,7 +29,7 @@ print '\n'
 
 # VERIFICATION
 print "Creating an environment with the following details: "
-print "* OS version: %s" %osversion
+print "* RHEL version: %s" %osversion
 print "* Package version: %s" %pkgversion
 print "* Core file: %s" %corelocation
 print '\n'
@@ -86,24 +87,24 @@ scp.put(corelocation, corevol)
 print "Generating container image... this may take awhile..."
 
 # Exec command won't accept multiple strings so we have to build the docker build command first as a string
-dockerbuild = "cd %s ; docker build --force-rm=true --tag=%s --file=%s ." % (corevol, newfile, newfile) 
-stdin, stdout, stderr = ssh.exec_command(dockerbuild)
+dockerbuild = "cd %s ; docker build --tag=%s --file=%s ." % (corevol, newfile, newfile) 
+ssh.exec_command(dockerbuild)
 
 
 # FIXME: Monitor the progress of docker build
 
+# CLEANUP
+# Remove generated dockerfile on client and container host as well as remove the core file from the corevol directory since it
+# is now inside the container
+print "Container generated. Cleaning up temporary files..."
+os.remove(newfile)
+removefile = "cd %s; rm %s" % (corevol, corefile)
+ssh.exec_command(removefile)
+sys.exit(1)
 
 # COMPLETED
 # Tell the user where to go
 # We're placing dockerun in a string for use later
 dockerrun = "docker run -ti %s /usr/bin/gdb %s" % (newfile, corefile)
-print "Container generated.  Access the core file by running: %s" %dockerrun
+print "FINISHED. Access the core file by running: %s" %dockerrun
 
-# CLEANUP
-# Remove generated dockerfile on client and container host as well as remove the core file from the corevol directory since it
-# is now inside the container
-print "Cleaning up temporary files..."
-os.remove(newfile)
-removefile = "cd %s; rm %s" % (corevol, corefile)
-ssh.exec_command(removefile)
-sys.exit(1)
