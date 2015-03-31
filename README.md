@@ -1,17 +1,19 @@
 # bumblebee 
-## Application core environment automation
+**Application core environment automation**
 
 Bumblebee is an application core environment automater written in python.  Environments with valid debuginfo packages are spun up on demand on the container host using docker.  
 
-## Client Install
+## Client install from source
 
- * Install Python 2.x
- * `pip install scp`
+ * Python 2.x
+ * `pip install scp uuid validators`
+ * Edit environment variables `containerhost` and `corevol` inside `create-container.py` 
 
-## Server Requirements
+## Server requirements
 
- * subscribed to the debuginfo and default repositories for your distro
- * shared volume for core files 
+ * Subscribed to the debuginfo and default repositories for your distro.
+ * Temporary space to house incoming core files and dockerfile's.
+ * Plenty of space to host containers.  Due to the size of debuginfo packages, containers may become quite large.
 
 ## How it works
 

@@ -1,37 +1,46 @@
-#!/usr/bin/env python
+#!/usr/bin/env python  
 import sys
 import paramiko
 import os
-import os.path
 import uuid
+from validators import between
 from scp import SCPClient
-#import dockerpy
 
-# Environment variables
-containerhost = "hostname.example.com"
+# ENVIRONMENT VARIABLES
+# containerhost is the machine which hosts your containers, if you are running on localhost, specify that instead
+containerhost = "hostname"
+# corevol is a temporary space located on the container host for cores and does not need to be large as 
+# core files are cleaned up following container creation 
 corevol = "/cores"
 
-# Input requests
-osversion = raw_input('Enter the RHEL version the core file was created on (4, 5, 6 or 7): ')
+# INPUT REQUESTS 
+# FIXME: Change these inputs to command line flags
+osversion = input('Enter the RHEL version the core file was created on (5, 6 or 7): ')
+if not between(osversion, min=5, max=7):
+	print "The RHEL version entered is invalid."
+	sys.exit(1)
+else:
+	pass
+
 pkgversion = raw_input('Enter the full package name-version.arch (ex. autofs-5.0.5-109.el6_6.1.x86_64): ')
 corelocation = raw_input('Enter the full path to the core file you need analyzed: ')
 print '\n'
 
-# Verification
+# VERIFICATION
 print "Creating an environment with the following details: "
 print "* OS version: %s" %osversion
 print "* Package version: %s" %pkgversion
 print "* Core file: %s" %corelocation
 print '\n'
 
-yn = raw_input("Is this correct? Enter (y)es or (n)o: ")
+yn = raw_input("Is this correct? Enter (y)es or (n)o: ") 
 if yn == "yes" or yn == "y":
-	print "Continuing..."
-elif yn == "no" or yn == "n":
-	print "Environment build cancelled. Exiting."
+	print "Continuing..." 
+elif yn == "no" or yn == "n": 
+	print "Environment build cancelled. Exiting." 
   	sys.exit(1)
 
-# Verify the corefile exists and is readable
+# Verify the corefile exists and is readable 
 if os.path.isfile(corelocation) and os.access(corelocation, os.R_OK):
 	print '\n'
 else:
@@ -48,7 +57,9 @@ ssh.connect(containerhost, username="root",password="password", look_for_keys=Fa
 
 print "Initializing docker container..."
 
-# Build the docker file locally from the dockerfile skeleton and copy it to the container host
+# Build the docker file locally from the dockerfile skeleton and copy it to the container host.
+# The new docker file will be named after a randomly generated uuid, the same uuid will be used
+# to tag the container on the host
 u = uuid.uuid4()
 newfile = u.hex
 corefile = os.path.basename(corelocation)
@@ -75,19 +86,22 @@ scp.put(corelocation, corevol)
 print "Generating container image... this may take awhile..."
 
 # Exec command won't accept multiple strings so we have to build the docker build command first as a string
-dockerbuild = "cd %s ; docker build --tag=%s --file=%s ." % (corevol, newfile, newfile) 
+dockerbuild = "cd %s ; docker build --force-rm=true --tag=%s --file=%s ." % (corevol, newfile, newfile) 
 stdin, stdout, stderr = ssh.exec_command(dockerbuild)
+
 
 # FIXME: Monitor the progress of docker build
 
 
-# All done, tell the user where to go
+# COMPLETED
+# Tell the user where to go
 # We're placing dockerun in a string for use later
 dockerrun = "docker run -ti %s /usr/bin/gdb %s" % (newfile, corefile)
-print "Container generated.  Access the core file by running:" dockerrun
+print "Container generated.  Access the core file by running: %s" %dockerrun
 
-# Cleanup
-# Remove generated dockerfile on client and container host
+# CLEANUP
+# Remove generated dockerfile on client and container host as well as remove the core file from the corevol directory since it
+# is now inside the container
 print "Cleaning up temporary files..."
 os.remove(newfile)
 removefile = "cd %s; rm %s" % (corevol, corefile)
