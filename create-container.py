@@ -21,7 +21,6 @@ if not between(osversion, min=5, max=7):
 	sys.exit(1)
 else:
 	pass
-	osversion = str(osversion)
 
 pkgversion = raw_input('Enter the full package name-version.arch (ex. autofs-5.0.5-109.el6_6.1.x86_64): ')
 corelocation = raw_input('Enter the full path to the core file you need analyzed: ')
@@ -67,7 +66,7 @@ corefile = os.path.basename(corelocation)
 infile = open('dockerfile')
 outfile = open(newfile, 'w')
 replacements = {'$osversion':osversion, '$pkgversion':pkgversion, '$corefile':corefile}
-
+	
 for line in infile:
 	for src, target in replacements.iteritems():
 		line = line.replace(src, target)
@@ -88,23 +87,28 @@ print "Generating container image... this may take awhile..."
 
 # Exec command won't accept multiple strings so we have to build the docker build command first as a string
 dockerbuild = "cd %s ; docker build --tag=%s --file=%s ." % (corevol, newfile, newfile) 
-ssh.exec_command(dockerbuild)
+stdin, stdout, stderr = ssh.exec_command(dockerbuild)
 
-
-# FIXME: Monitor the progress of docker build
+# Monitor the progress of the docker build
+while not stdout.channel.exit_status_ready():
+	if stdout.channel.recv_ready():
+		print stdout.channel.recv(1024)
 
 # CLEANUP
 # Remove generated dockerfile on client and container host as well as remove the core file from the corevol directory since it
 # is now inside the container
+print "\n"
 print "Container generated. Cleaning up temporary files..."
 os.remove(newfile)
 removefile = "cd %s; rm %s" % (corevol, corefile)
 ssh.exec_command(removefile)
-sys.exit(1)
 
 # COMPLETED
 # Tell the user where to go
 # We're placing dockerun in a string for use later
 dockerrun = "docker run -ti %s /usr/bin/gdb %s" % (newfile, corefile)
-print "FINISHED. Access the core file by running: %s" %dockerrun
+print "-------------------------------------------"
+print "FINISHED. Access the core file on %s with" %containerhost
+print "# %s" %dockerrun 
+print "-------------------------------------------"
 
