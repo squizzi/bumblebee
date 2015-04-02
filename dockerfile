@@ -10,9 +10,13 @@ FROM rhel$osversion
 
 # Add the core file to the container
 COPY $corefile /
+WORKDIR /
+
+# The rpmdb likes to corrupt inside the container, so lets make sure that yum runs fine by rebuilding it 
+RUN rpm --rebuilddb 
+RUN yum clean all
 
 # Install specific package version and dependencies 
-WORKDIR /
 RUN yum -y install gdb gcc elfutils $pkgversion
 # Sometimes build ids in eu-unstrip don't pull debuginfo packages for pkgversion so we'll specify that manually first 
 # then install the rest of debuginfos via build ids from eu-unstrip 
