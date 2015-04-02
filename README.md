@@ -14,6 +14,8 @@ Bumblebee is an application core environment automater written in python.  Envir
  * Subscribed to the debuginfo and default repositories for your distro.
  * Temporary space to house incoming core files and dockerfile's.
  * Plenty of space to host containers.  Due to the size of debuginfo packages, containers may become quite large.
+ * docker images for each minor version of your distro.  If you don't have these you can create them using the mkimage.sh scripts provided within the docker repo under `docker/contrib` 
+
 
 ## How it works
 
