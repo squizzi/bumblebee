@@ -11,7 +11,10 @@ FROM rhel$osversion
 # Add the core file to the container
 COPY $corefile /
 
-# Install debuginfos, specific package version and debug dependencies
+# Install specific package version and dependencies 
 WORKDIR /
 RUN yum -y install gdb gcc elfutils $pkgversion
+# Sometimes build ids in eu-unstrip don't pull debuginfo packages for pkgversion so we'll specify that manually first 
+# then install the rest of debuginfos via build ids from eu-unstrip 
+RUN yum --enablerepo='*-debug' -y install $(echo $pkgversion | sed -e '0,/-/{s/-/-debuginfo-/}')
 RUN yum --enablerepo='*-debug*' -y install $(eu-unstrip -n --core=/$corefile | sed -e 's#^[^ ]* \(..\)\([^@ ]*\).*$#/usr/lib/debug/.build-id/\1/\2#p' -e 's/$/.debug/')

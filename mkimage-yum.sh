@@ -7,6 +7,8 @@
 # to build CentOS images on other systems.
 # 
 # Forked from docker/contrib/mkimage-yum.sh 
+# Modifications made to download from internal repository for specific 
+# OS versions, disabling everything else. 
 
 usage() {
     cat <<EOOPTS
@@ -65,7 +67,7 @@ if [ -d /etc/yum/vars ]; then
     cp -a /etc/yum/vars "$target"/etc/yum/
 fi
 
-yum -c "$yum_config" --installroot="$target" --releasever=/ --setopt=tsflags=nodocs \
+yum -c "$yum_config" --installroot="$target" --disablerepo=* --enablerepo=osversion --releasever=/ --setopt=tsflags=nodocs \
     --setopt=group_package_types=mandatory -y groupinstall Core
 yum -c "$yum_config" --installroot="$target" -y clean all
 
@@ -89,6 +91,8 @@ rm -rf "$target"/sbin/sln
 #  ldconfig
 rm -rf "$target"/etc/ld.so.cache
 rm -rf "$target"/var/cache/ldconfig/*
+#  copy repo files in from host 
+cp -a /etc/yum.repos.d/rhel6.4-internal.repo "$target"/etc/yum.repos.d/
 
 version=
 for file in "$target"/etc/{redhat,system}-release
