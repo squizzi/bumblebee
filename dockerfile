@@ -14,9 +14,7 @@ COPY $corefile /
 # Set WORKDIR to directory containing core file
 WORKDIR /
 
-# The rpmdb likes to corrupt inside the container, so lets make sure that yum runs fine by removing the existing database
-# Then install specific package version and dependencies 
-# Sometimes build ids in eu-unstrip don't pull debuginfo packages for pkgversion so we'll specify that manually first 
-# Finally install the rest of debuginfos via build ids from eu-unstrip 
+# The rpmdb likes to corrupt inside the container, so lets make sure that yum runs fine by rebuilding the db
+# then we'll install all of our debuginfos 
 # We have to do this in one RUN command to make sure the rpmdb doesn't recorrupt across intermediary containers 
-RUN rpm --rebuilddb ; yum -y install gdb gcc elfutils $pkgversion ; yum --enablerepo='*-debug' -y install $(echo $pkgversion | sed -e '0,/-/{s/-/-debuginfo-/}') ; yum --enablerepo='*-debug*' -y install $(eu-unstrip -n --core=/$corefile | sed -e 's#^[^ ]* \(..\)\([^@ ]*\).*$#/usr/lib/debug/.build-id/\1/\2#p' -e 's/$/.debug/')
+RUN rpm --rebuilddb ; yum -y install gdb gcc elfutils $pkgversion ; yum --enablerepo='*-debug' -y install $(echo $pkgversion  sed -e '0,/-/{s/-/-debuginfo-/}') ; yum --enablerepo='*-debug*' -y install $(eu-unstrip -n --core=/$corefile | sed -e 's#^[^ ]* \(..\)\([^@ ]*\).*$#/usr/lib/debug/.build-id/\1/\2#p' -e 's/$/.debug/')
