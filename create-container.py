@@ -3,7 +3,7 @@ import sys
 import paramiko
 import os
 import uuid
-from validators import between
+import re
 from scp import SCPClient
 
 # ENVIRONMENT VARIABLES
@@ -14,14 +14,15 @@ containerhost = "hostname"
 corevol = "/cores"
 
 # INPUT REQUESTS 
-# FIXME: Change these inputs to command line flags and add a --help dialog
-osversion = int(input('Enter the RHEL version the core file was created on (5, 6 or 7): '))
-if not between(osversion, min=5, max=7):
-	print "The RHEL version entered is invalid."
-	sys.exit(1)
-else:
-	pass
+# FIXME: Change these inputs to command line flags as well as interactive option and add a --help dialog
+def getosversion():
+	osversion = raw_input('Enter the full RHEL version the core file was created on in X.Y format (5, 6 and 7 supported): ')
+	valid = "^[5-7]\.([0-9]$|1[0-1]$)"
+	while not re.match (valid, osversion):
+		osversion = raw_input('The RHEL version entered is invalid, try again: ')
+	return osversion
 
+getosversion()
 pkgversion = raw_input('Enter the full package name-version.arch (ex. autofs-5.0.5-109.el6_6.1.x86_64): ')
 corelocation = raw_input('Enter the full path to the core file you need analyzed: ')
 print '\n'
@@ -47,6 +48,7 @@ else:
 	print "The core file is either missing or is not readable.  Exiting."
 	sys.exit(1)
 
+# IMAGE BUILD
 # Create container environment on server
 # Setup ssh/scp
 # Right now we just specify username/password for testing purposes however this will use a more secure
