@@ -3,8 +3,6 @@
 
 Bumblebee is an application core environment automater written in python.  Environments with valid debuginfo packages are spun up on demand on the container host using docker.  
 
-The code base for bumblebee was created with RHEL/CentOS in mind but it can be tweaked to fit any distro.
-
 ## Client install from source
 
  * Python 2.x
