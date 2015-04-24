@@ -8,13 +8,13 @@ from scp import SCPClient
 
 # ENVIRONMENT VARIABLES
 # containerhost is the machine which hosts your containers, if you are running on localhost, specify that instead
-containerhost = "dell-per720-3.gsslab.rdu2.redhat.com"
+containerhost = "hostname"
 # corevol is a temporary space located on the container host for cores and does not need to be large as 
 # core files are cleaned up following container creation 
 corevol = "/cores"
 
 # INPUT REQUESTS 
-# FIXME: Change these inputs to command line flags and add a --help dialog
+# FIXME: Change these inputs to command line flags as well as interactive option and add a --help dialog
 def getosversion():
 	osversion = raw_input('Enter the full RHEL version the core file was created on in X.Y format (5, 6 and 7 supported): ')
 	valid = "^[5-7]\.([0-9]$|1[0-1]$)"
@@ -22,9 +22,9 @@ def getosversion():
 		osversion = raw_input('The RHEL version entered is invalid, try again: ')
 	return osversion
 
-osversion = getosversion()
+getosversion()
 pkgversion = raw_input('Enter the full package name-version.arch (ex. autofs-5.0.5-109.el6_6.1.x86_64): ')
-corelocation = raw_input('Enter the full path to the core file: ')
+corelocation = raw_input('Enter the full path to the core file you need analyzed: ')
 print '\n'
 
 # VERIFICATION
@@ -48,13 +48,14 @@ else:
 	print "The core file is either missing or is not readable.  Exiting."
 	sys.exit(1)
 
+# IMAGE BUILD
 # Create container environment on server
 # Setup ssh/scp
 # Right now we just specify username/password for testing purposes however this will use a more secure
 # method in the future
 ssh = paramiko.SSHClient()
 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-ssh.connect(containerhost, username="root",password="redhat", look_for_keys=False)
+ssh.connect(containerhost, username="root",password="password", look_for_keys=False)
 
 print "Initializing docker container..."
 
@@ -64,18 +65,10 @@ print "Initializing docker container..."
 u = uuid.uuid4()
 newfile = u.hex
 corefile = os.path.basename(corelocation)
-infile = open('dockerfile')
+infile = open('extras/dockerfile')
 outfile = open(newfile, 'w')
 replacements = {'$osversion':osversion, '$pkgversion':pkgversion, '$corefile':corefile}
-
-#if re.match('^[6-7].[0-11]$',osversion):
-#	osversion = str(osversion)		
-#    replacements = {'$osversion':osversion, '$pkgversion':pkgversion, '$corefile':corefile}
-#else:
-	# We have to specify the RHEL5 private registry here since there's no default rhel5 image to pull from the standard registry
-#	osversion = str(osversion)		
-#	replacements = {'rhel$osversion':'cc7eb88725a2', '$pkgversion':pkgversion, '$corefile':corefile}
-
+	
 for line in infile:
 	for src, target in replacements.iteritems():
 		line = line.replace(src, target)
