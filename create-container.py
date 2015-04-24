@@ -65,7 +65,7 @@ print "Initializing docker container..."
 u = uuid.uuid4()
 newfile = u.hex
 corefile = os.path.basename(corelocation)
-infile = open('dockerfile')
+infile = open('extras/dockerfile')
 outfile = open(newfile, 'w')
 replacements = {'$osversion':osversion, '$pkgversion':pkgversion, '$corefile':corefile}
 	
