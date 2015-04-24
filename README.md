@@ -27,8 +27,8 @@ For deploying the container host on a RHEL7 machine, create a `secrets` director
 ~~~
 secrets/
 |-- entitlement
-|   |-- XXXX-key.pem
-|   `-- XXXX.pem
+|   |-- XXXXX-key.pem
+|   `-- XXXXX.pem
 |-- redhat.repo
 `-- rhsm
     `-- ca
