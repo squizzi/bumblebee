@@ -22,7 +22,7 @@ def getosversion():
 		osversion = raw_input('The RHEL version entered is invalid, try again: ')
 	return osversion
 
-getosversion()
+osversion = getosversion()
 pkgversion = raw_input('Enter the full package name-version.arch (ex. autofs-5.0.5-109.el6_6.1.x86_64): ')
 corelocation = raw_input('Enter the full path to the core file you need analyzed: ')
 print '\n'
