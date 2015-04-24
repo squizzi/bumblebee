@@ -14,8 +14,27 @@ Bumblebee is an application core environment automater written in python.  Envir
  * Subscribed to the debuginfo and default repositories for your distro.
  * Temporary space to house incoming core files and dockerfile's.
  * Plenty of space to host containers.  Due to the size of debuginfo packages, containers may become quite large.
- * docker images for each minor version of your distro.  If you don't have these you can create them using the mkimage.sh scripts provided within the docker repo under `docker/contrib` 
+ * docker images for each minor version of your distro.  If you don't have these you can create them using the mkimage.sh scripts provided within the docker repo under `docker/contrib`.  This repo contains the mkimage-yum.sh script as it was built for use on Red Hat Enterprise Linux.
 
+### RHEL Deployment specifics 
+
+For deploying the container host on a RHEL7 machine, create a `secrets` directory underneath your desired `corevol`.  Fill it with the following information pulled from the host machine: 
+
+ * The contents of `/etc/pki/entitlement/`
+ * The contents of `/etc/rhsm/ca/`
+ * A `redhat.repo` file captured from a docker image from the official Red Hat docker registry. 
+
+~~~
+secrets/
+|-- entitlement
+|   |-- XXXX-key.pem
+|   `-- XXXX.pem
+|-- redhat.repo
+`-- rhsm
+    `-- ca
+        |-- candlepin-stage.pem
+        `-- redhat-uep.pem
+~~~
 
 ## How it works
 

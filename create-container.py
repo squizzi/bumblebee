@@ -8,7 +8,7 @@ from scp import SCPClient
 
 # ENVIRONMENT VARIABLES
 # containerhost is the machine which hosts your containers, if you are running on localhost, specify that instead
-containerhost = "hp-dl380pg8-6.gsslab.rdu2.redhat.com"
+containerhost = "dell-per720-3.gsslab.rdu2.redhat.com"
 # corevol is a temporary space located on the container host for cores and does not need to be large as 
 # core files are cleaned up following container creation 
 corevol = "/cores"
