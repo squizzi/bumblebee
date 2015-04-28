@@ -20,6 +20,6 @@ WORKDIR /
 # then we'll install all of our debuginfos 
 # We have to do this in one RUN command to make sure the rpmdb doesn't recorrupt across intermediary containers 
 RUN rpm --rebuilddb && \ 
-	yum -y install gdb gcc elfutils kernel $pkgversion && \ 
-	yum --enablerepo='*-debug*' -y install $(echo $pkgversion sed -e '0,/-/{s/-/-debuginfo-/}') && \ 
+	yum -y install gdb gcc elfutils $pkgversion && \ 
+	yum --enablerepo='*-debug*' -y install $(echo $pkgversion | sed -e '0,/-/{s/-/-debuginfo-/}') && \ 
 	yum --enablerepo='*-debug*' -y install $(eu-unstrip -n --core=/$corefile | sed -e 's#^[^ ]* \(..\)\([^@ ]*\).*$#/usr/lib/debug/.build-id/\1/\2#p' -e 's/$/.debug/')
