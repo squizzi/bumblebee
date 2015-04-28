@@ -15,7 +15,7 @@ def getosversion():
 
 # ENVIRONMENT VARIABLES
 # containerhost is the machine which hosts your containers, if you are running on localhost, specify that instead
-containerhost = "dell-per720-3.gsslab.rdu2.redhat.com"
+containerhost = "hostname"
 # corevol is a temporary space located on the container host for cores and does not need to be large as 
 # core files are cleaned up following container creation 
 corevol = "/cores"
@@ -55,7 +55,7 @@ else:
 # method in the future
 ssh = paramiko.SSHClient()
 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-ssh.connect(containerhost, username="root",password="redhat", look_for_keys=False)
+ssh.connect(containerhost, username="root",password="password", look_for_keys=False)
 
 print "Initializing docker container..."
 
