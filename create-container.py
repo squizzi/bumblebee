@@ -88,7 +88,7 @@ scp.put(corelocation, corevol)
 print "Generating container image... this may take awhile..."
 
 # Exec command won't accept multiple strings so we have to build the docker build command first as a string
-dockerbuild = "cd %s ; docker build --tag=%s --file=%s ." % (corevol, newfile, newfile) 
+dockerbuild = "cd %s ; docker build --rm=true --tag=%s --file=%s ." % (corevol, newfile, newfile) 
 stdin, stdout, stderr = ssh.exec_command(dockerbuild)
 
 # Monitor the progress of the docker build
