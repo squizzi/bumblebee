@@ -6,22 +6,22 @@ import uuid
 import re
 from scp import SCPClient
 
+def getosversion():
+	osversion = raw_input('Enter the full RHEL version the core file was created on in X.Y format (6 and 7 supported): ')
+	valid = "^[6-7]\.[0-9]$"
+	while not re.match (valid, osversion):
+		osversion = raw_input('The RHEL version entered is invalid, try again: ')
+	return osversion
+
 # ENVIRONMENT VARIABLES
 # containerhost is the machine which hosts your containers, if you are running on localhost, specify that instead
-containerhost = "hostname"
+containerhost = "dell-per720-3.gsslab.rdu2.redhat.com"
 # corevol is a temporary space located on the container host for cores and does not need to be large as 
 # core files are cleaned up following container creation 
 corevol = "/cores"
 
 # INPUT REQUESTS 
 # FIXME: Change these inputs to command line flags as well as interactive option and add a --help dialog
-def getosversion():
-	osversion = raw_input('Enter the full RHEL version the core file was created on in X.Y format (5, 6 and 7 supported): ')
-	valid = "^[5-7]\.([0-9]$|1[0-1]$)"
-	while not re.match (valid, osversion):
-		osversion = raw_input('The RHEL version entered is invalid, try again: ')
-	return osversion
-
 osversion = getosversion()
 pkgversion = raw_input('Enter the full package name-version.arch (ex. autofs-5.0.5-109.el6_6.1.x86_64): ')
 corelocation = raw_input('Enter the full path to the core file you need analyzed: ')
@@ -55,7 +55,7 @@ else:
 # method in the future
 ssh = paramiko.SSHClient()
 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-ssh.connect(containerhost, username="root",password="password", look_for_keys=False)
+ssh.connect(containerhost, username="root",password="redhat", look_for_keys=False)
 
 print "Initializing docker container..."
 
@@ -65,7 +65,14 @@ print "Initializing docker container..."
 u = uuid.uuid4()
 newfile = u.hex
 corefile = os.path.basename(corelocation)
-infile = open('extras/dockerfile')
+
+# Determine which docker file to use
+valid2 = "^[6]\.[0-4]$"
+if re.match (valid2, osversion): 
+	infile = open('extras/dockerfile_nonregistry')
+else:
+	infile = open('extras/dockerfile')
+
 outfile = open(newfile, 'w')
 replacements = {'$osversion':osversion, '$pkgversion':pkgversion, '$corefile':corefile}
 	
