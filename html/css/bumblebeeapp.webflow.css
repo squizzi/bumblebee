@@ -16,6 +16,7 @@ h1 {
   text-align: left;
 }
 h2 {
+  display: block;
   margin-top: 20px;
   margin-bottom: 10px;
   font-family: Ubuntu, Helvetica, sans-serif;
@@ -54,6 +55,8 @@ h6 {
 }
 p {
   margin-bottom: 5px;
+  font-family:'Fontawesome webfont', sans-serif;
+  color: white;
 }
 a {
   color: #00e;
@@ -115,6 +118,7 @@ a {
 .footer-text.link {
   -webkit-transition: all 500ms ease;
   transition: all 500ms ease;
+  font-family:'Fontawesome webfont', sans-serif;
 }
 .footer-text.link:hover {
   color: #ffd13b;
@@ -132,7 +136,7 @@ a {
   margin-top: 20px;
 }
 .submit {
-  margin: 20px 0px 0px;
+  margin: 10px 0px 0px;
   padding: 10px 15px;
   border-bottom: 0px none #e3a600;
   border-radius: 3px;
@@ -158,6 +162,11 @@ a {
 .title-bg {
   margin-top: 0px;
   background-color: #1f1f1f;
+}
+.upload {
+  padding-bottom: 10px;
+  font-family: Lato, sans-serif;
+  color: white;
 }
 
 @font-face {
