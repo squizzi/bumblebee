@@ -8,17 +8,18 @@
 # Set the base image to RHEL version
 FROM rhel$osversion:$osversion
 
+MAINTAINER bumblebee 
+
 # Setup yum configuration and entitlements for container
 # This is only necessary for RHEL6.0 - 6.4 containers as they are not in the official Red Hat registry
 # and have been built manually using mkimage-yum.sh  
-RUN mkdir -p /etc/pki/entitlement-host/ 
+# FIXME: Glob dem files once feature is avaliable 
+RUN mkdir -p /etc/pki/entitlement-host/ /etc/rhsm-host /etc/yum.repos.d/
 COPY .secrets/entitlement/XXXXX-key.pem /etc/pki/entitlement-host/
 COPY .secrets/entitlement/XXXXX.pem /etc/pki/entitlement-host/
-RUN mkdir -p /etc/rhsm-host
 COPY .secrets/rhsm/ca/candlepin-stage.pem /etc/rhsm-host/ca/ 
 COPY .secrets/rhsm/ca/redhat-uep.pem /etc/rhsm-host/ca/
 COPY .secrets/rhsm/rhsm.conf /etc/rhsm-host/rhsm.conf 
-RUN mkdir -p /etc/yum.repos.d/
 COPY .secrets/redhat.repo /etc/yum.repos.d/
 
 # Add the core file to the container
@@ -30,4 +31,7 @@ WORKDIR /
 # The rpmdb likes to corrupt inside the container, so lets make sure that yum runs fine by rebuilding the db
 # then we'll install all of our debuginfos 
 # We have to do this in one RUN command to make sure the rpmdb doesn't recorrupt across intermediary containers 
-RUN rpm --rebuilddb ; yum -y install gdb gcc elfutils $pkgversion ; yum --enablerepo='*-debug' -y install $(echo $pkgversion sed -e '0,/-/{s/-/-debuginfo-/}') ; yum --enablerepo='*-debug*' -y install $(eu-unstrip -n --core=/$corefile | sed -e 's#^[^ ]* \(..\)\([^@ ]*\).*$#/usr/lib/debug/.build-id/\1/\2#p' -e 's/$/.debug/')
+RUN rpm --rebuilddb && \ 
+	yum -y install gdb gcc elfutils kernel $pkgversion && \ 
+	yum --enablerepo='*-debug*' -y install $(echo $pkgversion sed -e '0,/-/{s/-/-debuginfo-/}') && \ 
+	yum --enablerepo='*-debug*' -y install $(eu-unstrip -n --core=/$corefile | sed -e 's#^[^ ]* \(..\)\([^@ ]*\).*$#/usr/lib/debug/.build-id/\1/\2#p' -e 's/$/.debug/')
