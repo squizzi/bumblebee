@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<!-- This site was created in Webflow. http://www.webflow.com-->
+<!-- Last Published: Fri Apr 24 2015 21:52:02 GMT+0000 (UTC) -->
+<html data-wf-site="553a80a4386a57f579639279" data-wf-page="553a80a4386a57f57963927a">
+<head>
+  <meta charset="utf-8">
+  <title>Bumblebee | Docker core automation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="generator" content="Webflow">
+  <link rel="stylesheet" type="text/css" href="css/normalize.css">
+  <link rel="stylesheet" type="text/css" href="css/webflow.css">
+  <link rel="stylesheet" type="text/css" href="css/bumblebeeapp.webflow.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js"></script>
+  <script>
+    WebFont.load({
+      google: {
+        families: ["Changa One:400,400italic","Ubuntu:300,300italic,400,400italic,500,500italic,700,700italic"]
+      }
+    });
+  </script>
+  <script type="text/javascript" src="js/modernizr.js"></script>
+</head>
+<body class="bg">
+  <div class="w-section title-bg">
+    <div class="w-container title">
+      <h1>bumblebee</h1>
+      <div class="subtitle">Application core environment generator</div>
+    </div>
+  </div>
+  <div class="w-section main-bg">
+    <div class="w-container">
+      <h2>Analyze a core file</h2>
+      <div class="w-form">
+        <form class="form" id="wf-form-Core-form" name="wf-form-Core-form" data-name="Core form">
+          <label class="field-label" for="Core-file">Upload a core file:</label>
+          <input class="w-input" id="Core-file" type="text" name="Core-file" data-name="Core file" required="required">
+          <label class="field-label" for="field">Select the version of RHEL the core file was generated on:</label>
+          <select class="w-select" id="field" name="field" required="required">
+            <option value="">Select one...</option>
+            <option value="6">RHEL6.0</option>
+            <option value="6.1">RHEL6.1</option>
+            <option value="6.2">RHEL6.2</option>
+            <option value="6.3">RHEL6.3</option>
+            <option value="6.4">RHEL6.4</option>
+            <option value="6.5">RHEL6.5</option>
+            <option value="6.6">RHEL6.6</option>
+            <option value="7.0">RHEL7.0</option>
+            <option value="7.1">RHEL7.1</option>
+            <option value="7.2">RHEL7.2</option>
+          </select>
+          <label class="field-label" for="field-2">Enter the full package name-version.arch:</label>
+          <input class="w-input" id="field-2" type="text" placeholder="autofs-5.0.5-109.el6_6.1.x86_64" name="field-2" required="required">
+          <input class="w-button submit" type="submit" value="SUBMIT" data-wait="Please wait...">
+        </form>
+        <div class="w-form-done">
+          <p>Thank you! Your submission has been received!</p>
+        </div>
+        <div class="w-form-fail">
+          <p>Oops! Something went wrong while submitting the form :(</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="w-section footer">
+    <div class="w-container">
+      <div class="w-row">
+        <div class="w-col w-col-6 footer-text"><a class="footer-text link" href="mailto:ksquizza@redhat.com?subject=Need%20help%20with%20bumblebee">Help</a>
+          <div class="footer-text">&nbsp;•&nbsp;</div><a class="footer-text link" href="https://github.com/squizzi/bumblebee/issues" target="_blank">Submit a bug</a>
+        </div>
+        <div class="w-col w-col-6 w-clearfix"><a class="footer-text left-align" href="https://github.com/squizzi/bumblebee" target="_blank"> Github</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <!--[if lte IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/placeholders/3.0.2/placeholders.min.js"></script><![endif]-->
+</body>
+</html>
