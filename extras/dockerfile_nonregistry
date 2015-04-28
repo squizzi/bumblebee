@@ -19,7 +19,6 @@ COPY .secrets/entitlement/XXXXX-key.pem /etc/pki/entitlement-host/
 COPY .secrets/entitlement/XXXXX.pem /etc/pki/entitlement-host/
 COPY .secrets/rhsm/ca/candlepin-stage.pem /etc/rhsm-host/ca/ 
 COPY .secrets/rhsm/ca/redhat-uep.pem /etc/rhsm-host/ca/
-COPY .secrets/rhsm/rhsm.conf /etc/rhsm-host/rhsm.conf 
 COPY .secrets/redhat.repo /etc/yum.repos.d/
 
 # Add the core file to the container
