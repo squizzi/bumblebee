@@ -18,14 +18,14 @@ Bumblebee is an application core environment automater written in python.  Envir
 
 ### RHEL Deployment specifics 
 
-For deploying the container host on a RHEL7 machine, create a `secrets` directory underneath your desired `corevol`.  Fill it with the following information pulled from the host machine: 
+For deploying the container host on a RHEL7 machine, create a `.secrets` directory underneath your desired `corevol`. Fill it with the following information pulled from the host machine: 
 
  * The contents of `/etc/pki/entitlement/`
  * The contents of `/etc/rhsm/ca/`
- * A `redhat.repo` file captured from a docker image from the official Red Hat docker registry. 
+ * A `redhat.repo` file captured from a RHEL machine that has been subscribed via `subscription-manager`.
 
 ~~~
-secrets/
+.secrets/
 |-- entitlement
 |   |-- XXXXX-key.pem
 |   `-- XXXXX.pem
@@ -36,10 +36,23 @@ secrets/
         `-- redhat-uep.pem
 ~~~
 
+#### Z-Stream Repositories 
+
+If you'd like to support RHEL 6.0 - 6.4 machines you will need to capture `redhat.repo` files from a RHEL6 machine where you've set the release to that specific version, for example: `subscription-manager release --set=6.4`.  This will create 5 repo files that you can pull from the `.secrets` directory: 
+~~~
+|-- repos
+|   |-- 6.0z.repo
+|   |-- 6.1z.repo
+|   |-- 6.2z.repo
+|   |-- 6.3z.repo
+|   `-- 6.4z.repo
+~~~
+This will allow you to spin up environments where cores have been created on older versions of RHEL.  If you don't use z-stream repos you'll encounter issues with package versioning and your build-ids won't match.  This will result in incorrect debuginfos and you won't be able to debug the core files successfully. 
+
 ## How it works
 
-1. bumblebee requires a container host to connect to which must be configured with a directory to store user core information.  At this time, clients will need to have passwordless ssh access to the container host (in the future this won't be neccessary).  
+1. bumblebee requires a container host to connect to which must be configured with a directory to store user core information.  
 2. Once bumblebee is invoked it will request package and version information for the package that produced the application core as well as the version of OS that the core was created on.  Finally it will ask for the location of the core file the user would like an environment created for.
-3. Next, the client will connect to the server and spin up a container instance based on osversion, pkgversion and copy the core file to the root of the container.The environment will be created and the correct debuginfo's and other dependencies for the core file will be installed.
-4. bumblebee will provide `docker attach` information for the user to attach to their environment to browse the core file in `gdb`.
+3. Next, the client will connect to the server and spin up a container instance based on osversion, pkgversion and copy the core file to the root of the container. The environment will be created and the correct debuginfo's and other dependencies for the core file will be installed.
+4. bumblebee will provide `docker run` information for the user to attach to their environment to browse the core file in `gdb`.
 
