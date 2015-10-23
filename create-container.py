@@ -6,14 +6,14 @@ import uuid
 import re
 from scp import SCPClient
 
-# ENVIRONMENT VARIABLES
+## ENVIRONMENT VARIABLES
 # containerhost is the machine which hosts your containers, if you are running on localhost, specify that instead
 containerhost = "hostname"
 # corevol is a temporary space located on the container host for cores and does not need to be large as 
 # core files are cleaned up following container creation 
 corevol = "/cores"
 
-# INPUT REQUESTS 
+## INPUT REQUESTS 
 # FIXME: Change these inputs to command line flags as well as interactive option and add a --help dialog
 def getosversion():
 	osversion = raw_input('Enter the full RHEL version the core file was created on in X.Y format (5, 6 and 7 supported): ')
@@ -27,7 +27,7 @@ pkgversion = raw_input('Enter the full package name-version.arch (ex. autofs-5.0
 corelocation = raw_input('Enter the full path to the core file you need analyzed: ')
 print '\n'
 
-# VERIFICATION
+## VERIFICATION
 print "Creating an environment with the following details: "
 print "* RHEL version: %s" %osversion
 print "* Package version: %s" %pkgversion
@@ -48,7 +48,7 @@ else:
 	print "The core file is either missing or is not readable.  Exiting."
 	sys.exit(1)
 
-# IMAGE BUILD
+## IMAGE BUILD
 # Create container environment on server
 # Setup ssh/scp
 # Right now we just specify username/password for testing purposes however this will use a more secure
@@ -96,7 +96,7 @@ while not stdout.channel.exit_status_ready():
 	if stdout.channel.recv_ready():
 		print stdout.channel.recv(1024)
 
-# CLEANUP
+## CLEANUP
 # Remove generated dockerfile on client and container host as well as remove the core file from the corevol directory since it
 # is now inside the container
 print "\n"
@@ -105,7 +105,7 @@ os.remove(newfile)
 removefile = "cd %s; rm %s" % (corevol, corefile)
 ssh.exec_command(removefile)
 
-# COMPLETED
+## COMPLETED
 # Tell the user where to go
 # We're placing dockerun in a string for use later
 dockerrun = "docker run -ti %s /usr/bin/gdb %s" % (newfile, corefile)
